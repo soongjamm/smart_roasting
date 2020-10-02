@@ -6,19 +6,8 @@ const mongoose = require('mongoose');
 const port = process.env.PORT || 9999;
 const { Home, GetUploadImage, PostUploadImage } = require('./controller')
 const multer = require('multer')
-const axios = require('axios')
-// 임시
-var storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, 'uploads/')
-    },
-    filename: function (req, file, cb) {
-        cb(null, file.fieldname + '-' + Date.now())
-    }
-})
-
+var storage = multer.memoryStorage()
 var upload = multer({ storage: storage })
-//
 
 function InitServer() {
     Routing();
