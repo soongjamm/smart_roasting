@@ -2,8 +2,8 @@ const app = require("../app");
 const request = require("supertest");
 const path = require("path");
 
-describe("Image upload test", () => {
-    it("should pass", (done) => {
+describe("API 서버에 이미지 전송 (분석요청) 테스트", () => {
+    it("It should return 'data' (json)", (done) => {
         request(app)
             .post("/UploadImage")
             .field("Content-Type", "multipart/form-data")

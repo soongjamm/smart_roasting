@@ -16,7 +16,12 @@ def predict():
             if extension in IMG_EX:
                 # img면 분석 진행
                 data['isImg'] = True
-                # 색상, 채도, 명도등 줘야함
+                # 색상(hue), 채도(saturation), 명도(brightness)등과 로스팅 레벨 결과값을 줘야함
+                # 일단 임시로
+                data['hue'] = 255
+                data['saturation'] = 255
+                data['brightness'] = 255
+                data['roasting_level'] = 'Full City'
                 return jsonify(data)  # 분석결과 리턴
             else:
                 # not img

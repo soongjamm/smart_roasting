@@ -28,7 +28,7 @@ exports.PostUploadImage = async function (req, res) {
             }
         )
         const { data } = postResponse;
-        console.log('success?:', data['isImg'])
+        console.log('', data)
         if (data['isImg'] === true) {
             // 결과를 정상적으로 받았음
             res.sendStatus(200);
