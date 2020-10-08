@@ -1,3 +1,5 @@
 {
-    "git.ignoreLimitWarning": true
+    "git.ignoreLimitWarning": true,
+    "python.pythonPath": "/Users/soongjamm/.pyenv/versions/3.7.0/bin/python",
+    "python.formatting.provider": "black"
 }

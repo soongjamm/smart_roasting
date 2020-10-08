@@ -2,7 +2,7 @@
 
 ## 실행
 - (mongoDB 실행)
-- mongod  
+- mongod    
   
 - (/flask)
 - FLASK_DEBUG=1 flask run  

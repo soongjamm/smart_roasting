@@ -4,7 +4,7 @@ const app = express();
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const port = process.env.PORT || 9999;
-const { Home, PostUploadImage, GetPostAll, GetAPost, UploadPost } = require('./controller')
+const { Home, PostUploadImage, GetPostAll, GetAPost, UploadPost, PostRoastingInfo, PutRoastingInfo } = require('./controller')
 const multer = require('multer')
 const logger = require('morgan')
 var storage = multer.memoryStorage()
@@ -34,6 +34,8 @@ function Routing() {
     app.get('/GetPost', GetPostAll);
     app.get('/GetPost/:id', GetAPost)
     app.post('/UploadPost', UploadPost);
+    app.post('/RoastingInfo', PostRoastingInfo);
+    app.put("/RoastingInfo", PutRoastingInfo);
 };
 
 InitServer();
