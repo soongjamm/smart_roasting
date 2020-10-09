@@ -1,6 +1,7 @@
 const axios = require('axios');
 const FormData = require('form-data');
 const mongoose = require('mongoose')
+const Bean = require('./models/bean')
 const Post = require('./models/post')
 const Roasting = require('./models/roasting')
 const PREDICT_URL = 'http://localhost:5000/predict'
@@ -84,6 +85,7 @@ exports.GetAPost = function (req, res) {
 }
 
 // 게시글 POST
+// 작성자가 로그인 되어있는지 확인 필요?  
 exports.UploadPost = async function (req, res) {
     const { body: post } = req;
 
@@ -97,6 +99,9 @@ exports.UploadPost = async function (req, res) {
         res.sendStatus(500)
     }
 }
+
+// 게시글 DELETE
+// 게시자와 삭제하려는 사람이 동일한 id인지 확인해야 함
 
 // 로스팅 정보 POST
 exports.PostRoastingInfo = async function (req, res) {
@@ -115,5 +120,29 @@ exports.PostRoastingInfo = async function (req, res) {
 
 // 로스팅 정보 PUT (내용 수정)
 exports.PutRoastingInfo = async function (req, res) {
+
+}
+
+// 원두 정보 GET
+// 원두 정보 화면 입장시 전체 정보
+exports.GetBeansInfo = async function (req, res) {
+}
+
+// 원두 정보 POST
+// 원두에 대한 정보를 추가
+exports.PostsBeansInfo = async function (req, res) {
+    const { body: bean } = req;
+    aBean = new Bean(bean);
+    try {
+        posted = await aBean.save();
+        console.log("added to db : ", posted)
+        res.sendStatus(200)
+    } catch (err) {
+        res.sendStatus(400)
+    }
+}
+
+// 특정 조건의 원두 정보 GET
+exports.GetConditionalBeansInfo = async function (req, res) {
 
 }
