@@ -130,6 +130,7 @@ exports.GetBeansInfo = async function (req, res) {
 
 // 원두 정보 POST
 // 원두에 대한 정보를 추가
+// 아직 테스트 안해봄
 exports.PostsBeansInfo = async function (req, res) {
     const { body: bean } = req;
     aBean = new Bean(bean);
