@@ -1,11 +1,106 @@
-from flask import Flask, request, redirect, jsonify
+from flask import Flask, request, redirect, jsonify, render_template, url_for, json
 import magic
 import numpy as np
 import cv2
 import base64
+from sklearn.cluster import KMeans
 
 app = Flask(__name__)
 IMG_EX = ["JPG", "JPEG", "GIF", "PNG"]
+
+
+####
+def centroid_histogram(clt):
+    # grab the number of different clusters and create a histogram
+    # based on the number of pixels assigned to each cluster
+    numLabels = np.arange(0, len(np.unique(clt.labels_)) + 1)
+    (hist, _) = np.histogram(clt.labels_, bins=numLabels)
+
+    # normalize the histogram, such that it sums to one
+    hist = hist.astype("float")
+    hist /= hist.sum()
+
+    # return the histogram
+    return hist
+
+
+def plot_colors(hist, centroids):
+    # initialize the bar chart representing the relative frequency
+    # of each of the colors
+    bar = np.zeros((50, 300, 3), dtype="uint8")
+    startX = 0
+    avg = dict()
+    # loop over the percentage of each cluster and the color of
+    # each cluster
+    idx = 0
+    for (percent, color) in zip(hist, centroids):
+        # plot the relative percentage of each cluster
+        endX = startX + (percent * 300)
+        cv2.rectangle(
+            bar, (int(startX), 0), (int(endX), 50), color.astype("uint8").tolist(), -1
+        )
+        avg[idx] = color.astype("uint8").tolist()
+        idx += 1
+        startX = endX
+
+    return avg
+    # return the bar chart
+    # return bar
+
+
+def image_color_cluster(extracted_image, k=5):
+    image = extracted_image
+    #
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    image = image.reshape((image.shape[0] * image.shape[1], 3))
+
+    clt = KMeans(n_clusters=k)
+    clt.fit(image)
+    # kmeans.labels_array([1, 1, 1, 0, 0, 0], dtype=int32)
+
+    hist = centroid_histogram(clt)
+    bar = plot_colors(hist, clt.cluster_centers_)
+
+    res = [0, 0, 0]
+    color = ""
+    cnt = 0
+    maxval = [0 * 3]
+    minval = [1e9 * 3]
+    for b in bar.values():
+        if b[0] == 0:
+            continue
+        if b[0] > maxval[0]:
+            maxval = b
+        elif b[0] < minval[0]:
+            minval = b
+        cnt += 1
+        res[0] += b[0]
+        res[1] += b[1]
+        res[2] += b[2]
+
+    for i in range(3):
+        res[i] -= maxval[i]
+
+    res = list(map(lambda x: x / (cnt - 1), res))
+    print(bar)
+    if res[0] >= 100 and res[1] >= 55:
+        color = "Agtron95"
+    elif res[0] >= 90:
+        color = "Agtron85"
+    elif res[0] >= 85:
+        color = "Agtron75"
+    elif res[0] >= 75:
+        color = "Agtron65"
+    elif res[0] >= 65:
+        color = "Agrton55"
+    else:
+        color = "파악불가"
+
+    print(res)
+
+    print(color)
+
+    return color
 
 
 def rgbToHsv(rgb):
@@ -17,28 +112,42 @@ def rgbToHsv(rgb):
     return hsv
 
 
-@app.route("/predict", methods=["GET", "POST"])
-def predict():
-    data = {}
-    if request.method == "POST":
-        if request.files.get("my_image"):
-            postImage = request.files["my_image"].read()
-            extension = magic.from_buffer(postImage).split()[0].upper()
-            # 이미지 파일이면 분석 진행
-            if extension in IMG_EX:
-                # 이미지에서 RGB 추출후 HSV로 변환한다.
-                # HSV값을 토대로 로스팅 레벨을 분석한다.
-                tmp_rgb = [100, 150, 200]  # 임의의 RGV값
-                hsv = rgbToHsv(tmp_rgb)
-                data["isImg"] = True
-                data["hue"] = int(hsv[0])
-                data["saturation"] = int(hsv[1])
-                data["value"] = int(hsv[2])
-                data["roasting_level"] = "Full City"  # 임의의 로스팅 레벨
-                return jsonify(data)
-            else:
-                return jsonify(data)
+@app.route("/extraction", methods=("GET", "POST"))
+def analysis():
+    if request.method == "GET":
+        return render_template("image_upload.html")
+    else:
+        if request.files.get("file"):
+            # read image file string data
+            filestr = request.files["file"].read()
+            # convert string data to numpy array
+            npimg = np.fromstring(filestr, np.uint8)
+            # convert numpy array to image
+            img = cv2.imdecode(npimg, cv2.IMREAD_COLOR)
 
-        # 이미지 파일이 아니면 'no image' 문자 리턴
+            # img = cv2.imread(request.files.get("file"))  # 이미지 파일을 컬러로 불러옴
+            img_hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+
+            # Brown의 HSV 범위 정의
+            lower_brown = np.array([2, 107, 66])
+            upper_brown = np.array([9, 163, 103])
+
+            # # 커피의 색만을 뽑아내기 위해 HSV 이미지의 범위 정하기
+            img_mask = cv2.inRange(img_hsv, lower_brown, upper_brown)
+            res = cv2.bitwise_and(img, img, mask=img_mask)
+            # cv2.imwrite("result.jpg", res)  # 커피색만 추출한 이미지 저장
+
+            # lists = res.tolist()
+            # json_str = json.dumps(lists)
+
+            result = image_color_cluster(res)
+
+            return result
+
         else:
-            return "no image"
+            return jsonify({"res": "이미지없음"})
+
+    return jsonify({"res": "failed"})
+
+
+app.run(port=5999)

@@ -1,7 +1,6 @@
 {
   "name": "smart_roasting",
   "version": "1.0.0",
-  "description": "",
   "main": "server.js",
   "dependencies": {
     "axios": "^0.20.0",
@@ -21,10 +20,11 @@
     "supertest": "^5.0.0"
   },
   "scripts": {
-    "test": "node_modules/.bin/mocha ",
+    "test": "mocha ",
     "start": "node_modules/nodemon/bin/nodemon.js app.js"
   },
   "author": "",
   "license": "ISC",
-  "keywords": []
+  "keywords": [],
+  "description": ""
 }

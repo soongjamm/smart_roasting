@@ -30,7 +30,7 @@ function InitServer() {
 
 function Routing() {
     app.get('/', Home);
-    app.post('/UploadImage', upload.single('img'), PostUploadImage);
+    app.post('/UploadImage', upload.single('file'), PostUploadImage);
     app.get('/GetPost', GetPostAll);
     app.get('/GetPost/:id', GetAPost)
     app.post('/UploadPost', UploadPost);
