@@ -26,9 +26,3 @@ img_mask = cv2.inRange(img_hsv, lower_brown, upper_brown)
 
 # 바이너리 이미지를 마스크로 사용하여 원본이미지에서 범위값에 해당하는 부분을 획득
 res = cv2.bitwise_and(img, img, mask=img_mask)
-# cv2.imshow("img_origin", img)
-# cv2.imshow("img_mask", img_mask)
-# cv2.imshow("img_color", res)
-# cv2.imwrite("result.jpg", res)  # 커피색만 추출한 이미지 저장
-# cv2.waitKey(0)
-# cv2.destroyAllWindows()

@@ -1,0 +1,13 @@
+<%- include('./base'); %>
+
+<div class="container-sm mx-auto" style="margin:10%">
+    <div class="card align-middle mx-auto" style="width: 500px;">
+        <p class="h3 mx-auto">업로드한 이미지</p>
+        <img id="originalImage" src="data:image/png;base64,<%= image %>" alt="..." style="max-width: 50%;"
+            class="rounded mx-auto d-block border">
+        <div class="card-body mx-auto">
+            <p class="card-text h4 mx-auto">결과 : <%= result %></p>
+        </div>
+    </div>
+
+</div>

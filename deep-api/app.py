@@ -11,30 +11,21 @@ IMG_EX = ["JPG", "JPEG", "GIF", "PNG"]
 
 ####
 def centroid_histogram(clt):
-    # grab the number of different clusters and create a histogram
-    # based on the number of pixels assigned to each cluster
     numLabels = np.arange(0, len(np.unique(clt.labels_)) + 1)
     (hist, _) = np.histogram(clt.labels_, bins=numLabels)
 
-    # normalize the histogram, such that it sums to one
     hist = hist.astype("float")
     hist /= hist.sum()
 
-    # return the histogram
     return hist
 
 
 def plot_colors(hist, centroids):
-    # initialize the bar chart representing the relative frequency
-    # of each of the colors
     bar = np.zeros((50, 300, 3), dtype="uint8")
     startX = 0
     avg = dict()
-    # loop over the percentage of each cluster and the color of
-    # each cluster
     idx = 0
     for (percent, color) in zip(hist, centroids):
-        # plot the relative percentage of each cluster
         endX = startX + (percent * 300)
         cv2.rectangle(
             bar, (int(startX), 0), (int(endX), 50), color.astype("uint8").tolist(), -1
@@ -44,8 +35,6 @@ def plot_colors(hist, centroids):
         startX = endX
 
     return avg
-    # return the bar chart
-    # return bar
 
 
 def image_color_cluster(extracted_image, k=5):
@@ -56,7 +45,6 @@ def image_color_cluster(extracted_image, k=5):
 
     clt = KMeans(n_clusters=k)
     clt.fit(image)
-    # kmeans.labels_array([1, 1, 1, 0, 0, 0], dtype=int32)
 
     hist = centroid_histogram(clt)
     bar = plot_colors(hist, clt.cluster_centers_)
@@ -83,13 +71,13 @@ def image_color_cluster(extracted_image, k=5):
 
     res = list(map(lambda x: x / (cnt - 1), res))
     print(bar)
-    if res[0] >= 100 and res[1] >= 55:
+    if res[0] >= 100:
         color = "Agtron95"
     elif res[0] >= 90:
         color = "Agtron85"
     elif res[0] >= 85:
         color = "Agtron75"
-    elif res[0] >= 75:
+    elif res[0] >= 79:
         color = "Agtron65"
     elif res[0] >= 65:
         color = "Agrton55"
@@ -97,7 +85,6 @@ def image_color_cluster(extracted_image, k=5):
         color = "파악불가"
 
     print(res)
-
     print(color)
 
     return color
@@ -135,13 +122,10 @@ def analysis():
             # # 커피의 색만을 뽑아내기 위해 HSV 이미지의 범위 정하기
             img_mask = cv2.inRange(img_hsv, lower_brown, upper_brown)
             res = cv2.bitwise_and(img, img, mask=img_mask)
-            # cv2.imwrite("result.jpg", res)  # 커피색만 추출한 이미지 저장
-
-            # lists = res.tolist()
-            # json_str = json.dumps(lists)
-
+            cv2.imwrite("result.jpg", res)  # 커피색만 추출한 이미지 저장
+            print("res저장@@@@@@@@@@@@@@@@@@@@@@@")
             result = image_color_cluster(res)
-
+            print("res저장@@@@@@@@@@@@@@@@@@@@@@@")
             return result
 
         else:

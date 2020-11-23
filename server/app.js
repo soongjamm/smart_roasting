@@ -11,15 +11,16 @@ var storage = multer.memoryStorage()
 var upload = multer({ storage: storage })
 
 function InitServer() {
+    app.set('view engine', 'ejs');
     app.use(logger('dev'));
     app.use(bodyParser.urlencoded({ extended: true }));
     app.use(bodyParser.json());
-    mongoose.Promise = global.Promise; // node.js native promise 사용
+    // mongoose.Promise = global.Promise; // node.js native promise 사용
 
-    // mongoDB connection
-    mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-        .then(() => console.log('Successfully connected to mongodb'))
-        .catch(e => console.error(e));
+    // // mongoDB connection
+    // mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+    //     .then(() => console.log('Successfully connected to mongodb'))
+    //     .catch(e => console.error(e));
 
 
     Routing();

@@ -6,6 +6,10 @@ const Post = require('./models/post')
 const Roasting = require('./models/roasting')
 const EXTRACT_URL = 'http://localhost:5999/extraction'
 
+let ejs = require('ejs');
+let people = ['geddy', 'neil', 'alex'];
+let html = ejs.render('<%= people.join(", "); %>', { people: people });
+
 async function FindRoastingInfo(roasting_level) {
     try {
         res = await Roasting.findOne({ brightness: roasting_level })
@@ -16,7 +20,7 @@ async function FindRoastingInfo(roasting_level) {
 }
 
 exports.Home = function (req, res) {
-    res.sendFile("/Users/soongjamm/smart_roasting/server/views/image_upload.html")
+    res.render("image_upload")
 }
 
 /* 사용자가 사진을 웹서버에 POST로 전송하면 분석을 위해 Flask 서버로 전달해주는 역할을 한다.
@@ -44,19 +48,9 @@ exports.PostUploadImage = async function (req, res) {
             }
         )
 
-        res.send(extractResponse.data)
-        // const { data } = predictResponse;
-        // // console.log('From deep-api server : ', data)
-        // if (data['isImg'] === true) {
-        //     // data['roasting_level']에 해당하는 로스팅 정보를 find - return.
-        //     const roastingInfo = await FindRoastingInfo(data['roasting_level']);
-        //     console.log(roastingInfo);
-        //     res.sendStatus(200);
-        //     return roastingInfo;
-        // } else {
-        //     console.log("not img")
-        //     res.sendStatus(400);
-        // }
+        // console.log(buffer)
+        let base64data = buffer.toString('base64');
+        res.render("result", { image: base64data, result: extractResponse.data })
 
     } catch (err) {
         res
